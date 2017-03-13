@@ -1,0 +1,43 @@
+---
+
+- name: Create the Bitbucket SSH public key file
+  copy: src="~/.ssh/id_rsa.pub"
+        dest=/home/ubuntu/.ssh/id_rsa_bitbucket.pub
+        mode=0644
+        owner={{ default_user }}
+        group={{ gunicorn_group }}
+  tags: key
+
+- name: Create the Bitbucket SSH private key file
+  copy: src="~/.ssh/id_rsa"
+        dest=/home/ubuntu/.ssh/id_rsa_bitbucket
+        mode=0600
+        owner={{ default_user }}
+        group={{ gunicorn_group }}
+  tags: key
+
+- name: Setup the Git repo
+  git: repo={{ git_repo }}
+       version="{{ git_branch }}"
+       dest={{ project_path }}
+       accept_hostkey=yes
+       key_file=/home/ubuntu/.ssh/id_rsa_bitbucket
+  tags: git, deploy
+
+- name: Delete all .pyc files
+  become: yes
+  command: find . -name '*.pyc' -delete
+  args:
+    chdir: "{{ project_path }}"
+  tags: git, deploy
+
+
+- name: Copy extra env_vars
+  become: yes
+  copy:
+    src: "group_vars/envs/{{ application_name }}.sh"
+    dest: "{{ project_path }}/extra_env_vars"
+    owner: "{{ default_user }}"
+    group: "{{ gunicorn_group }}"
+    mode: 0640
+  tags: deploy

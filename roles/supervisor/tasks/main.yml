@@ -1,0 +1,19 @@
+---
+
+- name: Install supervisor with apt-get
+  apt: name=supervisor
+  tags: packages, supervisor
+
+- name: Create the Supervisor config file
+  template: src=supervisor_config.j2
+            dest=/etc/supervisor/conf.d/{{ application_name }}.conf
+            backup=yes
+  tags: supervisor
+
+- name: Re-read the Supervisor config files
+  supervisorctl: name={{ application_name }} state=present
+  tags: deploy, supervisor
+
+- name: Restart Supervisor
+  supervisorctl: name={{ application_name }} state=restarted
+  tags: deploy, supervisor

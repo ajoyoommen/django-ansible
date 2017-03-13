@@ -1,0 +1,61 @@
+---
+
+# Set file permissions
+
+- name: Ensure that the application file permissions are set properly
+  file: path={{ virtualenv_path }}
+        recurse=yes
+        owner={{ gunicorn_user }}
+        group={{ gunicorn_group }}
+        state=directory
+  notify: restart application
+  tags: nginx, deploy
+
+- name: Install Nginx
+  apt: name=nginx update_cache={{ apt_update }} state=installed
+  tags: packages, nginx
+
+- name: Copy the SSL certificate to the remote server
+  when: ssl_enabled is defined and ssl_enabled
+  copy: content="{{ ssl_crt }}" dest={{ ssl_dest_dir }}/{{ application_name }}.crt
+  notify: restart nginx
+  tags: nginx
+
+- name: Copy the SSL private key to the remote server
+  when: ssl_enabled is defined and ssl_enabled
+  copy: content="{{ ssl_key }}" dest={{ ssl_dest_dir }}/{{ application_name }}.key
+  notify: restart nginx
+  tags: nginx
+
+- name: Create the Nginx config file with SSL
+  when: ssl_enabled is defined and ssl_enabled
+  template: src=nginx_site_ssl_config.j2
+            dest=/etc/nginx/sites-available/{{ application_name }}
+            backup=yes
+  notify: reload nginx
+  tags: nginx
+
+- name: Create the Nginx config file without SSL
+  when: ssl_enabled is undefined or not ssl_enabled
+  template: src=nginx_site_config.j2
+            dest=/etc/nginx/sites-available/{{ application_name }}
+            backup=yes
+  notify: reload nginx
+  tags: nginx
+
+- name: Ensure that the default site is disabled
+  command: rm /etc/nginx/sites-enabled/default
+           removes=/etc/nginx/sites-enabled/default
+  notify: reload nginx
+  tags: nginx
+
+- name: Ensure that the application site is enabled
+  command: ln -s /etc/nginx/sites-available/{{ application_name }}
+           /etc/nginx/sites-enabled/{{ application_name }}
+           creates=/etc/nginx/sites-enabled/{{ application_name }}
+  notify: reload nginx
+  tags: nginx
+
+- name: Ensure Nginx service is started
+  service: name=nginx state=started enabled=yes
+  tags: nginx
