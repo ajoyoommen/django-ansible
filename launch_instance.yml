@@ -1,0 +1,24 @@
+---
+
+- name: Launch a new EC2 instance
+  hosts: local
+  connection: local
+  gather_facts: False
+  vars:
+    key_name: noransoft-ansible
+    instance_type: t2.micro
+    security_group: webservers
+    image: ami-06116566
+    region: us-west-1
+    iam_role_name: s3-access-for-ec2
+  tasks:
+    - name: Launch instance
+      ec2:
+         key_name: "{{ key_name }}"
+         group: "{{ security_group }}"
+         instance_type: "{{ instance_type }}"
+         image: "{{ image }}"
+         wait: true
+         region: "{{ region }}"
+         instance_profile_name: "{{ iam_role_name }}"
+      register: ec2

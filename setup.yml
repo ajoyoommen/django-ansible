@@ -1,0 +1,10 @@
+---
+
+- name: Prepare a new instance for deployment
+  hosts: test-servers
+  gather_facts: no
+  vars:
+    - apt_update: yes
+  roles:
+    - { role: base, become: yes }
+    - { role: postgresql, become: yes }

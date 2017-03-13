@@ -1,0 +1,13 @@
+---
+
+- name: Check Database, NGINX and gunicorn server
+  hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: Check PostgreSQL service
+      service: name=postgresql state=started
+
+    - name: Check NGINX service
+      service: name=nginx state=started

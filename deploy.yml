@@ -1,0 +1,11 @@
+---
+
+- name: Deploy application on an instance
+  hosts: '{{ target }}'
+  gather_facts: no
+  roles:
+    - { role: webapp }
+    - { role: git }
+    - { role: django }
+    - { role: supervisor, become: yes }
+    - { role: nginx, become: yes }

@@ -1,0 +1,5 @@
+[all:vars]
+env=development
+
+[test-servers]
+test-alpha

@@ -1,0 +1,4 @@
+---
+ansible_user: ubuntu
+ansible_ssh_private_key_file: ~/.ssh/noransoft-ansible.pem
+ansible_host: ec2-52-53-176-103.us-west-1.compute.amazonaws.com
