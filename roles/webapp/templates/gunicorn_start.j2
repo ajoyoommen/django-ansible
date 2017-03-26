@@ -21,9 +21,6 @@ cd $DJANGODIR
 # Set additional environment variables.
 . {{ virtualenv_path }}/bin/postactivate
 
-# Source project-specific environment variables
-. {{ project_path }}/extra_env_vars
-
 # Create the run directory if it doesn't exist.
 RUNDIR=$(dirname $SOCKFILE)
 test -d $RUNDIR || mkdir -p $RUNDIR

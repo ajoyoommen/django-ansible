@@ -1,9 +1,5 @@
 ---
 
-default_user: "{{ ansible_user }}"
-
-apt_update: true
-
 application_name: appname
 project_name: projname
 server_name: projname.com
@@ -11,54 +7,4 @@ server_name: projname.com
 git_repo: git@bitbucket.org:Team/projname.git
 git_branch: master
 
-# Application settings.
-project_path: "/home/ubuntu/{{ application_name }}"
-virtualenv_path: "{{ project_path }}_venv"
-application_log_dir: "{{ project_path }}_logs"
-application_log_file: "{{ application_log_dir }}/gunicorn_supervisor.log"
-requirements_file: "{{ project_path }}/requirements.txt"
-
-# Database settings
-postgresql_version: 9.3
-db_user: postgres
-db_name: "{{ project_name }}"
-db_password: "{{ lookup('env', 'DB_PASS') }}"
-
-# Gunicorn settings
-gunicorn_user: "{{ default_user }}"
-gunicorn_group: webapps
-gunicorn_num_workers: 3
-gunicorn_max_requests: 0
-
-# Supervisor
-supervisor_directory: "/etc/supervisor/conf.d"
-supervisor_app_config: "{{ supervisor_directory }}/{{ application_name }}.conf"
-
-
-# Nginx settings
 ssl_enabled: false
-
-nginx_server_name: "{{ server_name }}"
-nginx_http_port: 80
-nginx_https_port: 443
-nginx_access_log_file: "{{ application_log_dir }}/nginx_access.log"
-nginx_error_log_file: "{{ application_log_dir }}/nginx_error.log"
-nginx_static_dir: "{{ project_path }}_static/"
-nginx_media_dir: "{{ project_path }}_media/"
-
-
-# Django Environment variables
-run_django_db_migrations: true
-run_django_collectstatic: true
-
-django_settings_file: "{{ project_name }}.settings.dev"
-django_environment:
-  DJANGO_SETTINGS_MODULE: "{{ django_settings_file }}"
-  MEDIA_ROOT: "{{ nginx_media_dir }}"
-  STATIC_ROOT: "{{ nginx_static_dir }}"
-  DBNAME: "{{ db_name }}"
-  DBUSER: "{{ db_user }}"
-  DBPASS: "{{ db_password }}"
-  HOSTNAME: "{{ lookup('env', 'HOSTNAME') }}"
-  MAILGUN_API_URL: "{{ lookup('env', 'MAILGUN_API_URL') }}"
-  MAILGUN_API_KEY: "{{ lookup('env', 'MAILGUN_API_KEY') }}"
