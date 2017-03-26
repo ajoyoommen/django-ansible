@@ -1,0 +1,8 @@
+- name: Create a database backup
+  command: pg_dump -U {{ db_user }} -w {{ db_name }} -Fc -f {{ db_name }}-{{ current_time.stdout }}.db
+
+- name: Fetch database backup
+  fetch:
+    src: /home/ubuntu/{{ db_name }}-{{ current_time.stdout }}.db
+    dest: "{{ db_name }}/"
+    flat: yes

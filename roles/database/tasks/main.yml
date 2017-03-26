@@ -1,0 +1,44 @@
+---
+
+- name: Current UTC time
+  command: date +"%Y%m%d-%H%M" --universal
+  register: current_time
+
+- name: Fetch a copy of the database
+  when: fetch is defined and fetch
+  include: postgres_backup.yml
+
+- name: Copy database to host system
+  when: restore is defined and restore
+  copy:
+    src: "{{ db_file }}"
+    dest: /home/ubuntu/{{ db_name }}/{{ db_name }}.db
+    owner: "{{ default_user }}"
+    group: "{{ gunicorn_group }}"
+    mode: 0644
+
+- name: Drop database
+  become_user: "{{ db_user }}"
+  when: restore is defined and restore
+  postgresql_db:
+      db: "{{ db_name }}"
+      encoding: 'UTF-8'
+      lc_collate: 'en_US.UTF-8'
+      lc_ctype: 'en_US.UTF-8'
+      template: 'template0'
+      state: absent
+
+- name: Create database
+  become_user: "{{ db_user }}"
+  when: restore is defined and restore
+  postgresql_db:
+      db: "{{ db_name }}"
+      encoding: 'UTF-8'
+      lc_collate: 'en_US.UTF-8'
+      lc_ctype: 'en_US.UTF-8'
+      template: 'template0'
+      state: present
+
+- name: Restore file to database
+  when: restore is defined and restore
+  command: pg_restore -U {{ db_user }} -Fc -d {{ db_name }} /home/ubuntu/{{ db_name }}/{{ db_name }}.db

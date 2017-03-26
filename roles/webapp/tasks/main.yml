@@ -3,7 +3,7 @@
 - name: Create the virtualenv
   command: virtualenv {{ virtualenv_path }} --no-site-packages
            creates={{ virtualenv_path }}/bin/activate
-  tags: virtualenv
+  tags: virtualenv, deploy
 
 - name: Ensure gunicorn is installed
   pip: virtualenv={{ virtualenv_path }} name=gunicorn

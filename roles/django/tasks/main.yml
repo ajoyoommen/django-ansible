@@ -4,16 +4,6 @@
   pip: virtualenv={{ virtualenv_path }} requirements={{ requirements_file }}
   tags: pip, deploy
 
-- name: Run the Django syncdb command
-  django_manage:
-    command: syncdb
-    app_path: "{{ project_path }}"
-    virtualenv: "{{ virtualenv_path }}"
-    settings: "{{ django_settings_file }}"
-  environment: "{{ django_environment }}"
-  when: run_django_syncdb is defined and run_django_syncdb
-  tags: django, syncdb, deploy
-
 - name: Run Django database migrations
   django_manage:
     command: migrate
@@ -32,4 +22,4 @@
     settings: "{{ django_settings_file }}"
   environment: "{{ django_environment }}"
   when: run_django_collectstatic is defined and run_django_collectstatic
-  tags: django, collectstatic, deploy
+  tags: django, deploy, deploy-quick

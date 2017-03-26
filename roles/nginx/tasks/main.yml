@@ -9,23 +9,32 @@
         group={{ gunicorn_group }}
         state=directory
   notify: restart application
-  tags: nginx, deploy
+  tags: nginx
 
 - name: Install Nginx
   apt: name=nginx update_cache={{ apt_update }} state=installed
   tags: packages, nginx
 
+- name: Create SSL directory
+  when: ssl_enabled is defined and ssl_enabled
+  file: path={{ ssl_dest_dir }} state=directory
+  tags: nginx, ssl
+
 - name: Copy the SSL certificate to the remote server
   when: ssl_enabled is defined and ssl_enabled
-  copy: content="{{ ssl_crt }}" dest={{ ssl_dest_dir }}/{{ application_name }}.crt
+  copy:
+    src: "{{ ssl_crt_file }}"
+    dest: "{{ ssl_dest_dir }}/{{ application_name }}.crt"
   notify: restart nginx
-  tags: nginx
+  tags: nginx, ssl
 
 - name: Copy the SSL private key to the remote server
   when: ssl_enabled is defined and ssl_enabled
-  copy: content="{{ ssl_key }}" dest={{ ssl_dest_dir }}/{{ application_name }}.key
+  copy:
+    src: "{{ ssl_key_file }}"
+    dest: "{{ ssl_dest_dir }}/{{ application_name }}.key"
   notify: restart nginx
-  tags: nginx
+  tags: nginx, ssl
 
 - name: Create the Nginx config file with SSL
   when: ssl_enabled is defined and ssl_enabled
@@ -33,7 +42,7 @@
             dest=/etc/nginx/sites-available/{{ application_name }}
             backup=yes
   notify: reload nginx
-  tags: nginx
+  tags: nginx, ssl
 
 - name: Create the Nginx config file without SSL
   when: ssl_enabled is undefined or not ssl_enabled

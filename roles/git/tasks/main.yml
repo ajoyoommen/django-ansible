@@ -6,7 +6,7 @@
         mode=0644
         owner={{ default_user }}
         group={{ gunicorn_group }}
-  tags: key
+  tags: ssh-key
 
 - name: Create the Bitbucket SSH private key file
   copy: src="~/.ssh/id_rsa"
@@ -14,7 +14,7 @@
         mode=0600
         owner={{ default_user }}
         group={{ gunicorn_group }}
-  tags: key
+  tags: ssh-key
 
 - name: Setup the Git repo
   git: repo={{ git_repo }}
@@ -22,7 +22,7 @@
        dest={{ project_path }}
        accept_hostkey=yes
        key_file=/home/ubuntu/.ssh/id_rsa_bitbucket
-  tags: git, deploy
+  tags: git, deploy, deploy-quick
 
 - name: Delete all .pyc files
   become: yes

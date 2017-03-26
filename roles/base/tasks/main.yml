@@ -19,6 +19,7 @@
     - python-dev
     - python-pip
     - python-virtualenv
+    - libjpeg-dev
   tags: packages
 
 - name: Upgrade pip
@@ -32,3 +33,7 @@
 - name: Add the application user to the application group
   user: name={{ gunicorn_user }} group={{ gunicorn_group }} state=present
   tags: create_users
+
+# - name: Reset ssh connection to allow user changes to affect 'current login user'
+#   meta: reset_connection
+#   tags: create_users

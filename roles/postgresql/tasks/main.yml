@@ -11,7 +11,7 @@
 
 - name: Ensure the PostgreSQL service is running
   service: name=postgresql state=started enabled=yes
-  tags: service, postgresql
+  tags: postgresql
 
 - name: Enable trust authentication for local connections
   lineinfile: >
@@ -22,4 +22,4 @@
 
 - name: Restart PostgreSQL
   service: name=postgresql state=restarted enabled=yes
-  tags: restart, postgresql
+  tags: postgresql
