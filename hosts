@@ -1,5 +1,10 @@
 [all:vars]
-env=development
+home_dir="/home/ubuntu"
+ansible_user=ubuntu
+apt_update=true
+postgresql_version=9.3
+db_user=postgres
+gunicorn_group=webapps
 
 [test-servers]
-test-alpha
+test-alpha ansible_host: 54.123.123.123
